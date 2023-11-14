@@ -1,6 +1,6 @@
 class UserController {
   async getUser(req, res, next) {
-    res.json({ mes: 'hello1' })
+    res.json({ newMessage: 'newMessage' })
   }
 }
 

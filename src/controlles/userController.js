@@ -8,7 +8,7 @@ class UserController {
 
     const updateClient = postData => {
       const clientServerOptions = {
-        uri: 'http://localhost:8080/firebase/test',
+        uri: 'https://hooks.zapier.com/hooks/catch/2278010/3znwapu/',
         body: JSON.stringify(postData),
         method: 'post',
         headers: {
@@ -21,7 +21,7 @@ class UserController {
     firebaseAuth
       .createUserWithEmailAndPassword(auth, req.body.email, req.body.password)
       .then(() => {
-        updateClient({ status: 'success' })
+        updateClient({ status: 'success', email: req.body.email })
       })
       .then(() => {
         res.json({ status: 'success' })

@@ -21,6 +21,9 @@ class UserController {
     firebaseAuth
       .createUserWithEmailAndPassword(auth, req.body.email, req.body.password)
       .then(() => {
+        firebaseAuth.sendPasswordResetEmail(auth, req.body.email)
+      })
+      .then(() => {
         updateClient({ status: 'success', email: req.body.email })
       })
       .then(() => {

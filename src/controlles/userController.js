@@ -30,7 +30,7 @@ class UserController {
         await firebaseAuth.sendPasswordResetEmail(auth, email)
       })
       .then(() => {
-        //updateClient({ status: 'success', email: req.body.email })
+        updateClient({ status: 'success', email: req.body.email })
       })
       .then(() => {
         res.json({ status: 'success' })

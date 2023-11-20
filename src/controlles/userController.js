@@ -4,6 +4,7 @@ const request = require('request')
 
 class UserController {
   async createUser(req, res, next) {
+    const { email, validDate, extendValidDate, type } = req.body
     const auth = firebaseAuth.getAuth()
 
     const updateClient = postData => {
@@ -19,12 +20,17 @@ class UserController {
     }
 
     firebaseAuth
-      .createUserWithEmailAndPassword(auth, req.body.email, req.body.password)
-      .then(() => {
-        firebaseAuth.sendPasswordResetEmail(auth, req.body.email)
+      .createUserWithEmailAndPassword(auth, email, 'qweasd!qwessQsdx')
+      .then(async () => {
+        const db = firestore.getFirestore()
+        await firestore.setDoc(firestore.doc(db, 'users', email), {
+          type,
+          validDate,
+        })
+        await firebaseAuth.sendPasswordResetEmail(auth, email)
       })
       .then(() => {
-        updateClient({ status: 'success', email: req.body.email })
+        //updateClient({ status: 'success', email: req.body.email })
       })
       .then(() => {
         res.json({ status: 'success' })

@@ -17,6 +17,10 @@ class UserController {
     request(clientServerOptions)
   }
 
+  static getDate(ms) {
+    return firestore.Timestamp.fromMillis(ms)
+  }
+
   static getUserDoc(email) {
     const db = firestore.getFirestore()
     return firestore.doc(db, usersCollection, email)
@@ -32,7 +36,7 @@ class UserController {
         const doc = UserController.getUserDoc(email)
         await firestore.setDoc(doc, {
           type,
-          validDate,
+          validDate: UserController.getDate(validDate),
         })
         await firebaseAuth.sendPasswordResetEmail(auth, email)
       })
@@ -55,7 +59,7 @@ class UserController {
     const doc = UserController.getUserDoc(email)
 
     await firestore
-      .updateDoc(doc, { validDate, type })
+      .updateDoc(doc, { validDate: UserController.getDate(validDate), type })
       .then(() => {
         res.json({ status: 'success' })
       })

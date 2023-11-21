@@ -2,35 +2,45 @@ const firestore = require('firebase/firestore')
 const firebaseAuth = require('firebase/auth')
 const request = require('request')
 
-class UserController {
-  async createUser(req, res, next) {
-    const { email, validDate, extendValidDate, type } = req.body
-    const auth = firebaseAuth.getAuth()
+const usersCollection = 'users'
 
-    const updateClient = postData => {
-      const clientServerOptions = {
-        uri: 'https://hooks.zapier.com/hooks/catch/2278010/3znwapu/',
-        body: JSON.stringify(postData),
-        method: 'post',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-      request(clientServerOptions)
+class UserController {
+  static updateClient(postData) {
+    const clientServerOptions = {
+      uri: 'https://hooks.zapier.com/hooks/catch/2278010/3znwapu/',
+      body: JSON.stringify(postData),
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+      },
     }
+    request(clientServerOptions)
+  }
+
+  static getUserDoc(email) {
+    const db = firestore.getFirestore()
+    return firestore.doc(db, usersCollection, email)
+  }
+
+  async createUser(req, res, next) {
+    const { email, validDate, type } = req.body
+    const auth = firebaseAuth.getAuth()
 
     firebaseAuth
       .createUserWithEmailAndPassword(auth, email, 'qweasd!qwessQsdx')
       .then(async () => {
-        const db = firestore.getFirestore()
-        await firestore.setDoc(firestore.doc(db, 'users', email), {
+        const doc = UserController.getUserDoc(email)
+        await firestore.setDoc(doc, {
           type,
           validDate,
         })
         await firebaseAuth.sendPasswordResetEmail(auth, email)
       })
       .then(() => {
-        updateClient({ status: 'success', email: req.body.email })
+        UserController.updateClient({
+          status: 'success',
+          email: req.body.email,
+        })
       })
       .then(() => {
         res.json({ status: 'success' })
@@ -40,12 +50,12 @@ class UserController {
       })
   }
 
-  async test(req, res, next) {
-    const db = firestore.getFirestore()
-    const dbRef = firestore.collection(db, 'newTest')
+  async extendSubscription(req, res, next) {
+    const { email, validDate, type } = req.body
+    const doc = UserController.getUserDoc(email)
 
     await firestore
-      .addDoc(dbRef, { data: req.body })
+      .updateDoc(doc, { validDate, type })
       .then(() => {
         res.json({ status: 'success' })
       })

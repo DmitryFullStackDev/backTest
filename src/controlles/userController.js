@@ -36,7 +36,7 @@ class UserController {
         const doc = UserController.getUserDoc(email)
         await firestore.setDoc(doc, {
           type,
-          validDate: UserController.getDate(Number(validDate)),
+          validDate: UserController.getDate(Number(validDate) * 1000),
         })
         await firebaseAuth.sendPasswordResetEmail(auth, email)
       })

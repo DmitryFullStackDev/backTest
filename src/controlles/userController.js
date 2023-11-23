@@ -26,9 +26,16 @@ class UserController {
     return firestore.doc(db, usersCollection, email)
   }
 
+  static saltCheck(res, salt) {}
+
   async createUser(req, res, next) {
-    const { email, validDate, type } = req.body
+    const { email, validDate, type, salt } = req.body
     const auth = firebaseAuth.getAuth()
+
+    if (salt !== 'test') {
+      res.json({ status: 'failed' })
+      return
+    }
 
     firebaseAuth
       .createUserWithEmailAndPassword(auth, email, 'qweasd!qwessQsdx')
@@ -55,8 +62,13 @@ class UserController {
   }
 
   async extendSubscription(req, res, next) {
-    const { email, validDate, type } = req.body
+    const { email, validDate, type, salt } = req.body
     const doc = UserController.getUserDoc(email)
+
+    if (salt !== 'test') {
+      res.json({ status: 'failed' })
+      return
+    }
 
     await firestore
       .updateDoc(doc, { validDate: UserController.getDate(validDate), type })

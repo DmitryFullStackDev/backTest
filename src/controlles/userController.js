@@ -3,6 +3,7 @@ const firebaseAuth = require('firebase/auth')
 const request = require('request')
 
 const usersCollection = 'users'
+const SALT = 'Sprkl#eW8a$$H@r'
 
 class UserController {
   static updateClient(postData) {
@@ -32,7 +33,7 @@ class UserController {
     const { email, validDate, type, salt } = req.body
     const auth = firebaseAuth.getAuth()
 
-    if (salt !== 'test') {
+    if (salt !== SALT) {
       res.json({ status: 'failed' })
       return
     }
@@ -65,7 +66,7 @@ class UserController {
     const { email, validDate, type, salt } = req.body
     const doc = UserController.getUserDoc(email)
 
-    if (salt !== 'test') {
+    if (salt !== SALT) {
       res.json({ status: 'failed' })
       return
     }
